@@ -7,8 +7,10 @@ import os
 transform_mnist = transforms.Compose([
     transforms.Grayscale(num_output_channels=1), # 将图像转换为单通道灰度图
     transforms.RandomRotation(15), # 随机旋转图像，旋转范围是 -15 度到 +15 度
-    transforms.RandomAffine(degrees=0, translate=(0.1, 0.1)), # 对图像进行仿射变换，degrees = 0代表不旋转，translate = (0.1, 0.1)代表平移 10%
-    transforms.RandomResizedCrop(28, scale=(0.8, 1.0)), # 随机裁剪图像，被裁剪为 28 * 28大小，scale = (0.8, 1.0)代表裁剪的范围是 80% 到 100%
+    transforms.RandomAffine(degrees=0, translate=(0.1, 0.1)), # 对图像进行仿射变换，degrees = 0代表不旋转，
+                                                              # translate = (0.1, 0.1)代表平移 10%
+    transforms.RandomResizedCrop(28, scale=(0.8, 1.0)), # 随机裁剪图像，被裁剪为 28 * 28大小，
+                                                            # scale = (0.8, 1.0)代表裁剪的范围是 80% 到 100%
     transforms.ToTensor(), # 将图像转化为张量
     transforms.Normalize(mean=[0.5], std=[0.5]) # 将图像进行正则化，使得输入数据在 -1 到 1 之间
 ])
@@ -55,7 +57,8 @@ def show_img(data, max_images=50):
             if cnt >= max_images: # 显示 50 张图片即可
                 break
             ax = fig.add_subplot(5, 10, cnt + 1) # 在 fig 上添加一个子图，cnt + 1 是子图的位置
-            ax.imshow(X[i].squeeze(), cmap='gray') # 显示图片，squeeze用于去掉维度为 1 的维度（X[i] 是 [1, 28, 28]，变成 [28, 28]），cmap='gray'是显示灰度图
+            ax.imshow(X[i].squeeze(), cmap='gray') # 显示图片，squeeze用于去掉维度为 1 的维度（X[i] 是 [1, 28, 28]，变成 [28, 28]）
+                                                   # cmap= gray 是显示灰度图
             ax.set_title(f"Label: {y[i].item()}") # 设置子图的标题为这个图片的真实标签
             ax.axis('off')  # 不显示坐标轴
             cnt += 1 # 计数加一

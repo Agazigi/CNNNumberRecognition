@@ -1,13 +1,14 @@
 import torch as th
 from torch import nn as nn
 import utils
+import os
 
 # 卷积神经网络模型
 class CNNModel(nn.Module):
-    def __init__(self):
+    def __init__(self, data):
         super(CNNModel, self).__init__()
         self.labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] # 分类的真实标签
-        self.save_path = "..\\models\\model_mnist.pth" # 在这里同一设置参数文件的路径
+        self.save_path = os.path.join("..", "models", "model_" + data + ".pth") # 在这里同一设置参数文件的路径
         self.device = utils.try_gpu() # 获取可用的 GPU 设备
         # 卷积层部分，总共 4 层卷积层
         self.conv_layers = nn.Sequential(

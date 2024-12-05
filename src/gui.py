@@ -6,13 +6,16 @@ from PyQt5.QtCore import Qt
 import time
 from model import CNNModel
 import utils
+import os
+
 
 """
 模型加载
 """
-model = CNNModel() # 创建模型对象
-model.load_model() # 加载模型参数
-model.to(model.device) # 将模型移动到 GPU
+data = 'mnist'
+model = CNNModel(data)  # 创建模型对象
+model.load_model()  # 加载模型参数
+model.to(model.device)  # 将模型移动到 GPU
 
 # 画板
 class Painting(QWidget): # 继承 QWidget， QWidget 是抽象类，所有窗口的父类，所有窗口都继承自 QWidget
@@ -28,7 +31,7 @@ class Painting(QWidget): # 继承 QWidget， QWidget 是抽象类，所有窗口
         self.pixmap.fill(Qt.white) # 将画板的背景填充为白色
         self.setStyleSheet("border: 2px solid blue") # 设置边框的格式，为 2 像素、实线、蓝色的边框
         self.Color = Qt.black # 设置画笔颜色为黑色
-        self.pen_width = 10 # 设置画笔的宽度为 10 像素
+        self.pen_width = 15 # 设置画笔的宽度为 10 像素
     def paintEvent(self, event): # 处理绘制事件
         painter = QPainter(self.pixmap) # 创建一个画笔对象
         if self.mode == 'pen': # 如果当前是“画笔”模式
@@ -71,13 +74,14 @@ class Board(QMainWindow):
         :功能: 用来初始化界面
         """
         self.setWindowTitle("手写数字识别") # 设置窗口的标题
-        self.setWindowIcon(QIcon("..\\img\\number.png")) # 设置窗口的图标
+        icon_path = os.path.join("..", "img", "number.png")
+        self.setWindowIcon(QIcon(icon_path))
         self.resize(800, 600) # 设置窗口的大小
 
         self.brd = Painting(self) # 创建一个画板
         self.brd.setGeometry(20, 40, 601, 501) # 设置画板的位置和尺寸
 
-        self.button_file = QPushButton("选择文本",self) # 创建一个按钮
+        self.button_file = QPushButton("选择文件",self) # 创建一个按钮
         self.button_file.setGeometry(660, 80, 100, 50) # 设置按钮的位置和尺寸
         self.button_file.setFont(QFont("宋体", 10)) # 设置按钮的字体和大小
 
@@ -95,9 +99,15 @@ class Board(QMainWindow):
         self.predict_button.setGeometry(660, 260, 100, 50) # 设置按钮的位置和尺寸
         self.predict_button.setFont(QFont("宋体", 10)) # 设置按钮的字体和大小
 
+        # 橡皮按钮
         self.eraser_button = QPushButton("橡皮", self) # 创建一个按钮
         self.eraser_button.setGeometry(660, 200, 100, 50) # 设置按钮的位置和尺寸
         self.eraser_button.setFont(QFont("宋体", 10)) # 设置按钮的字体大小
+
+        # 新增清除按钮
+        self.clear_button = QPushButton("一键清除", self)  # 创建清除按钮
+        self.clear_button.setGeometry(660, 320, 100, 50)  # 设置按钮的位置和尺寸
+        self.clear_button.setFont(QFont("宋体", 10))  # 设置按钮的字体和大小
 
         # 对每一个按钮连接点击事件
         self.pen_button.clicked.connect(self.use_pen)
@@ -105,6 +115,7 @@ class Board(QMainWindow):
         self.button_file.clicked.connect(self.open_file)
         self.button_width.clicked.connect(self.choose_width)
         self.predict_button.clicked.connect(self.save_and_predict)
+        self.clear_button.clicked.connect(self.clear_canvas)
 
         # 在界面下添加预测结果标签
         self.result_label = QLabel(self) # 创建一个标签
@@ -115,7 +126,7 @@ class Board(QMainWindow):
         """
         :功能: 按照指定的路径打开文件夹，然后可以选择图片到画布上
         """
-        file_name = QFileDialog.getOpenFileName(self, "选择图片文件", "..\\img\\prediction") # 打开文件选择对话框
+        file_name = QFileDialog.getOpenFileName(self, "选择图片文件", os.path.join("..", "img", "prediction")) # 打开文件选择对话框
         if file_name[0]: # 如果选择了文件
             self.brd.pixmap = QPixmap(file_name[0]) # 设置画布的图片
     def use_pen(self):
@@ -154,6 +165,12 @@ class Board(QMainWindow):
             prediction = model.predict(img_tensor) # 使用训练好的模型对图片进行预测
             print(f"图片预测为: {prediction}")
             self.result_label.setText(f"预测结果: {prediction}") # 显示预测结果
+    def clear_canvas(self):
+        """
+        :功能: 清空画布
+        """
+        self.brd.pixmap.fill(Qt.white) # 填充画布为白色
+        self.brd.update() # 更新画布，重新显示
 
 
 if __name__ == '__main__':
