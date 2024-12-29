@@ -23,7 +23,8 @@ def img_to_tensor(img_path, output_size=(28, 28)):
     resized_img = inverted_img.resize(output_size, Image.Resampling.LANCZOS) # 将图片缩放为 28 * 28，其中 LANCZOS 是一种插值算法，用于缩放图片
     # 使用 matplotlib 显示处理后的图片
     # 将处理完后的图片显示出来
-    plt.imshow(resized_img, cmap='gray') # 显示图片，squeeze用于去掉维度为 1 的维度（X[i] 是 [1, 28, 28]，变成 [28, 28]），cmap='gray'是显示灰度图
+    plt.imshow(resized_img, cmap='gray') # 显示图片，squeeze用于去掉维度为 1 的维度（X[i] 是 [1, 28, 28]，变成 [28, 28]），
+                                        # cmap='gray'是显示灰度图
     plt.axis('off') # 不显示坐标轴
     plt.show()
     # 对图片进行预处理，包括转换为张量，归一化
