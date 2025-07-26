@@ -7,12 +7,17 @@ import time
 from model import CNNModel
 import utils
 import os
+import argparse
 
 
 """
 模型加载
 """
-data = 'mnist'
+parser = argparse.ArgumentParser()
+parser.add_argument('--data', default='mnist', help='选择数据集')
+args, unknown = parser.parse_known_args()
+data = args.data
+print(f"正在使用在 {data} 数据集上训练的模型")
 model = CNNModel(data)  # 创建模型对象
 model.load_model()  # 加载模型参数
 model.to(model.device)  # 将模型移动到 GPU
